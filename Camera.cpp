@@ -3,6 +3,8 @@
 #define CTR_X (640 / 2)
 #define CTR_Y (480 / 2)
 
+extern float delta;
+
 //Private functions
 glm::vec3 Camera::polarVector(float p, float y){
     // this form is already normalized
@@ -57,33 +59,38 @@ void Camera::update(float mousex, float mousey, SDL_Window *window){
 }
 
 void Camera::input(float speed){
+  float deltaTime = 1000.0f / delta;
   const Uint8* state = SDL_GetKeyboardState(NULL);
   if(state[SDL_SCANCODE_W]){
-    _position.x += (_cameraFront.x) * speed;
-    _position.z += (_cameraFront.z) * speed;
+    _position.x += (_cameraFront.x) * speed * deltaTime;
+    _position.z += (_cameraFront.z) * speed * deltaTime;
     cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_D]){
-    _position.x += (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).x) * speed;
-    _position.z += (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).z) * speed;
+    _position.x += (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).x) * speed * deltaTime;
+    _position.z += (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).z) * speed * deltaTime;
     cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_A]){
-    _position.x -= (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).x) * speed;
-    _position.z -= (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).z) * speed;
+    _position.x -= (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).x) * speed * deltaTime;
+    _position.z -= (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).z) * speed * deltaTime;
     cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_S]){
-    _position.x -= (_cameraFront.x) * speed;
-    _position.z -= (_cameraFront.z) * speed;
+    _position.x -= (_cameraFront.x) * speed * deltaTime;
+    _position.z -= (_cameraFront.z) * speed * deltaTime;
+    cout << _position.x << " " << _position.y << " " << _position.z << endl;
+  }
+  if(state[SDL_SCANCODE_R]){
+    _position = glm::vec3(0.0,0.0,0.0);
     cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_SPACE]){
-    _position.y += speed;
+    _position.y += speed * deltaTime;
     cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_LSHIFT]){
-    _position.y -= speed;
+    _position.y -= speed * deltaTime;
     cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   _view = glm::lookAt(_position, _position + _cameraFront, glm::vec3(0.0,1.0,0.0));

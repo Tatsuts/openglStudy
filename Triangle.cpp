@@ -1,5 +1,9 @@
 #include "Triangle.h"
 
+
+extern float delta;
+
+
 Triangle::Triangle(string name, glm::vec3 position, float angle, glm::vec3 color){
   _position = position;
   _angle = angle;
@@ -184,13 +188,16 @@ void Triangle::draw(){
 }
 
 void Triangle::update(glm::mat4 view, glm::mat4 projection){
+  float deltaTime = delta / 1000.0;
   float angle = SDL_GetTicks() / 1000.0 * 40;
 
   glm::mat4 m_model = glm::translate(glm::mat4(1.0f),_position) * glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0,1.0,0.0));
 
   glm::mat4 m_transform = projection * view * m_model;
 
-  _time += 0.01;
+  //_time += SDL_GetTicks() / 1000.0 * 0.05;
+  _time += (delta / 1000.0) / 2;
+
 
   glUseProgram(_shaderProgram);
   glUniformMatrix4fv(glGetUniformLocation(_shaderProgram, "m_transform"), 1, GL_FALSE, glm::value_ptr(m_transform));
