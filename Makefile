@@ -1,4 +1,4 @@
-CPP = *.cpp
+CPP = src/*.cpp
 CC = g++
 FLAGS = -Wall -lGLEW -lGL -lSDL2 -lSDL2_image -lSDL2_ttf -o
 NAME = test

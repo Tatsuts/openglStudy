@@ -12,24 +12,18 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-
+#include "ShaderUtil.h"
 
 using namespace std;
 
-char* file_read(const char* filename);
-
-void print_log(GLuint object);
-
-unsigned int create_shader(const char* filename, GLenum type);
-
-class Triangle{
+class Cube{
   public:
-    Triangle(string name, glm::vec3 positon, float angle, glm::vec3 color);
-    ~Triangle();
+    Cube(string name, glm::vec3 positon, float angle, glm::vec3 color);
+    ~Cube();
     bool init(float vertices[], int bytesize);
     void draw();
     void free();
-    void update(glm::mat4 view, glm::mat4 projection);
+    void update(glm::mat4 view, glm::mat4 projection, glm::vec3 lightpos);
 
   private:
     string teste;

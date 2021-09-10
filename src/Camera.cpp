@@ -51,7 +51,7 @@ void Camera::update(float mousex, float mousey, SDL_Window *window){
   _cameraFront = polarVector(glm::radians(_pitch), glm::radians(_yaw));
   //glm::vec3 _cameraFront = glm::rotateY(glm::vec3(0.0,0.0,-1.0),glm::radians(angle));
 
-  cout << _cameraFront.x << " " << _cameraFront.y << " " << _cameraFront.z << endl;
+  //cout << _cameraFront.x << " " << _cameraFront.y << " " << _cameraFront.z << endl;
   SDL_WarpMouseInWindow(window, CTR_X, CTR_Y);
 
 
@@ -64,37 +64,37 @@ void Camera::input(float speed){
   if(state[SDL_SCANCODE_W]){
     _position.x += (_cameraFront.x) * speed * deltaTime;
     _position.z += (_cameraFront.z) * speed * deltaTime;
-    cout << _position.x << " " << _position.y << " " << _position.z << endl;
+    //cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_D]){
     _position.x += (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).x) * speed * deltaTime;
     _position.z += (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).z) * speed * deltaTime;
-    cout << _position.x << " " << _position.y << " " << _position.z << endl;
+    //cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_A]){
     _position.x -= (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).x) * speed * deltaTime;
     _position.z -= (glm::cross(_cameraFront,glm::vec3(0.0,1.0,0.0)).z) * speed * deltaTime;
-    cout << _position.x << " " << _position.y << " " << _position.z << endl;
+    //cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_S]){
     _position.x -= (_cameraFront.x) * speed * deltaTime;
     _position.z -= (_cameraFront.z) * speed * deltaTime;
-    cout << _position.x << " " << _position.y << " " << _position.z << endl;
+    //cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_R]){
     _position = glm::vec3(0.0,0.0,0.0);
-    cout << _position.x << " " << _position.y << " " << _position.z << endl;
+    //cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_SPACE]){
     _position.y += speed * deltaTime;
-    cout << _position.x << " " << _position.y << " " << _position.z << endl;
+    //cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   if(state[SDL_SCANCODE_LSHIFT]){
     _position.y -= speed * deltaTime;
-    cout << _position.x << " " << _position.y << " " << _position.z << endl;
+    //cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
   _view = glm::lookAt(_position, _position + _cameraFront, glm::vec3(0.0,1.0,0.0));
-  _projection = glm::perspective(45.0f, (float)(320)/(float)(240), 0.2f, 20.0f);
+  _projection = glm::perspective(45.0f, (float)(320)/(float)(240), 0.2f, 200.0f);
 }
 
 glm::mat4 Camera::getView(){
@@ -107,4 +107,11 @@ glm::mat4 Camera::getProjection(){
 
 glm::mat4 Camera::getMatrix(){
   return _view * _projection;
+}
+
+glm::vec3 Camera::getCameraFront(){
+  return _cameraFront;
+}
+glm::vec3 Camera::getPosition(){
+  return _position;
 }
