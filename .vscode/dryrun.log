@@ -1,6 +1,0 @@
-make run --dry-run --keep-going --print-directory
-make: Entering directory '/home/tatsu/openglStudy'
-g++ src/*.cpp -Wall -lGLEW -lGL -lSDL2 -lSDL2_image -lSDL2_ttf -o test
-./test
-make: Leaving directory '/home/tatsu/openglStudy'
- 
