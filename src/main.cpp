@@ -1,6 +1,8 @@
 //Includes of libraries.
 #include <iostream>
 #include <string.h>
+
+
 #include <vector>
 
 using namespace std;
@@ -14,6 +16,10 @@ using namespace std;
 #include "Cube.h"
 #include "Camera.h"
 #include "Text.h"
+#include "Util.h"
+
+#define WHITE glm::vec3(1.0,1.0,1.0)
+#define BLACK glm::vec3(0.0,0.0,0.0)
 
 //Initialization of Global variables.
 glm::vec3 cameraFront;
@@ -27,7 +33,7 @@ float delta;
 
 
 //Render function to render things.
-void render(SDL_Window *window, vector <Cube *>Cube_test, vector <Text *>Text_test){
+void render(SDL_Window *window, vector <Cube *>Cube_test, vector <Text *>Text_test,Camera camera){
   //Clear the framebuffer and applies a color.
   glClearColor(0.0, 0.0, 0.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -39,7 +45,8 @@ void render(SDL_Window *window, vector <Cube *>Cube_test, vector <Text *>Text_te
   }
   float newdelta = floorf(delta * 100)/100;
   for(int j = 0; j < (int)Text_test.size(); j++){
-    Text_test[j]->draw("FPS: " + to_string((int)newdelta));
+    Text_test[j]->draw("FPS: " + to_string((int)newdelta) + "\nx:"+ to_string(camera.getPosition().x) + "\ny:"+ to_string(camera.getPosition().y) + "\nz:"+ to_string(camera.getPosition().z));
+    //Text_test[j]->draw("blabla");
   }
   //renderText(to_string(delta));
 
@@ -51,7 +58,6 @@ void render(SDL_Window *window, vector <Cube *>Cube_test, vector <Text *>Text_te
 void mainLoop(SDL_Window *window, vector <Cube *>Cube_test, vector <Text *>Text_test, Camera camera){
   //Warp the mouse in the window center.
   //SDL_WarpMouseInWindow(window, 640 / 2, 480 / 2);
-
 
   while(true){
     //Get the processor clock in the start of loop.
@@ -79,14 +85,14 @@ void mainLoop(SDL_Window *window, vector <Cube *>Cube_test, vector <Text *>Text_
     camera.input(0.005f);
 
     //Start the render function.
-    render(window, Cube_test, Text_test);
+    render(window, Cube_test, Text_test, camera);
 
     //Start the update function of the objects.
     for(int i = 0; i < (int)Cube_test.size(); i++){
       Cube_test[i]->update(camera.getView(),camera.getProjection(),camera.getPosition());
     }
     for(int j = 0; j < (int)Text_test.size(); j++){
-      Text_test[j]->update(to_string(delta));
+      Text_test[j]->update();
     }
 
 
@@ -128,44 +134,46 @@ int main(int argc, char *argv[]){
 
   //Store the vertices of the cube.
   float vertices[] = {
-    // front
-    -1.0, -1.0,  1.0,     0.0, 0.0,   0.0f, 0.0f, 1.0f,
-     1.0, -1.0,  1.0,     1.0, 0.0,   0.0f, 0.0f, 1.0f,
-     1.0,  1.0,  1.0,     1.0, 1.0,   0.0f, 0.0f, 1.0f,
-    -1.0,  1.0,  1.0,     0.0, 1.0,   0.0f, 0.0f, 1.0f,
-    // top
-    -1.0,  1.0,  1.0,     0.0, 0.0,   0.0f, 1.0f,  0.0f,
-     1.0,  1.0,  1.0,     1.0, 0.0,   0.0f, 1.0f,  0.0f,
-     1.0,  1.0, -1.0,     1.0, 1.0,   0.0f, 1.0f,  0.0f,
-    -1.0,  1.0, -1.0,     0.0, 1.0,   0.0f, 1.0f,  0.0f,
-    // back
-     1.0, -1.0, -1.0,     0.0, 0.0,   0.0f, 0.0f, -1.0f,
-    -1.0, -1.0, -1.0,     1.0, 0.0,   0.0f, 0.0f, -1.0f,
-    -1.0,  1.0, -1.0,     1.0, 1.0,   0.0f, 0.0f, -1.0f,
-     1.0,  1.0, -1.0,     0.0, 1.0,   0.0f, 0.0f, -1.0f,
-    // bottom
-    -1.0, -1.0, -1.0,     0.0, 0.0,   0.0f, -1.0f, 0.0f,
-     1.0, -1.0, -1.0,     1.0, 0.0,   0.0f, -1.0f, 0.0f,
-     1.0, -1.0,  1.0,     1.0, 1.0,   0.0f, -1.0f, 0.0f,
-    -1.0, -1.0,  1.0,     0.0, 1.0,   0.0f, -1.0f, 0.0f,
-    // left
-    -1.0, -1.0, -1.0,     0.0, 0.0,  -1.0f,  0.0f,  0.0f,
-    -1.0, -1.0,  1.0,     1.0, 0.0,  -1.0f,  0.0f,  0.0f,
-    -1.0,  1.0,  1.0,     1.0, 1.0,  -1.0f,  0.0f,  0.0f,
-    -1.0,  1.0, -1.0,     0.0, 1.0,  -1.0f,  0.0f,  0.0f,
-    // right
-     1.0, -1.0,  1.0,     0.0, 0.0,   1.0f,  0.0f,   0.0f,
-     1.0, -1.0, -1.0,     1.0, 0.0,   1.0f,  0.0f,   0.0f,
-     1.0,  1.0, -1.0,     1.0, 1.0,   1.0f,  0.0f,   0.0f,
-     1.0,  1.0,  1.0,     0.0, 1.0,   1.0f,  0.0f,   0.0f
+    // front              //TexCoord    //normal
+    -1.0, -1.0,  1.0,     0.0, 0.0,     0.0f, 0.0f, 1.0f,
+     1.0, -1.0,  1.0,     1.0, 0.0,     0.0f, 0.0f, 1.0f,
+     1.0,  1.0,  1.0,     1.0, 1.0,     0.0f, 0.0f, 1.0f,
+    -1.0,  1.0,  1.0,     0.0, 1.0,     0.0f, 0.0f, 1.0f,
+    // top                //TexCoord    //normal
+    -1.0,  1.0,  1.0,     0.0, 0.0,     0.0f, 1.0f,  0.0f,
+     1.0,  1.0,  1.0,     1.0, 0.0,     0.0f, 1.0f,  0.0f,
+     1.0,  1.0, -1.0,     1.0, 1.0,     0.0f, 1.0f,  0.0f,
+    -1.0,  1.0, -1.0,     0.0, 1.0,     0.0f, 1.0f,  0.0f,
+    // back               //TexCoord    //normal
+     1.0, -1.0, -1.0,     0.0, 0.0,     0.0f, 0.0f, -1.0f,
+    -1.0, -1.0, -1.0,     1.0, 0.0,     0.0f, 0.0f, -1.0f,
+    -1.0,  1.0, -1.0,     1.0, 1.0,     0.0f, 0.0f, -1.0f,
+     1.0,  1.0, -1.0,     0.0, 1.0,     0.0f, 0.0f, -1.0f,
+    // bottom             //TexCoord    //normal
+    -1.0, -1.0, -1.0,     0.0, 0.0,     0.0f, -1.0f, 0.0f,
+     1.0, -1.0, -1.0,     1.0, 0.0,     0.0f, -1.0f, 0.0f,
+     1.0, -1.0,  1.0,     1.0, 1.0,     0.0f, -1.0f, 0.0f,
+    -1.0, -1.0,  1.0,     0.0, 1.0,     0.0f, -1.0f, 0.0f,
+    // left               //TexCoord    //normal
+    -1.0, -1.0, -1.0,     0.0, 0.0,    -1.0f,  0.0f,  0.0f,
+    -1.0, -1.0,  1.0,     1.0, 0.0,    -1.0f,  0.0f,  0.0f,
+    -1.0,  1.0,  1.0,     1.0, 1.0,    -1.0f,  0.0f,  0.0f,
+    -1.0,  1.0, -1.0,     0.0, 1.0,    -1.0f,  0.0f,  0.0f,
+    // right              //TexCoord    //normal
+     1.0, -1.0,  1.0,     0.0, 0.0,     1.0f,  0.0f,   0.0f,
+     1.0, -1.0, -1.0,     1.0, 0.0,     1.0f,  0.0f,   0.0f,
+     1.0,  1.0, -1.0,     1.0, 1.0,     1.0f,  0.0f,   0.0f,
+     1.0,  1.0,  1.0,     0.0, 1.0,     1.0f,  0.0f,   0.0f
   };
 
   //Create a vector object of the cube and instantiates it.
   vector <Cube *>Cube_test;
-  Cube_test.push_back(new Cube("blabla", glm::vec3(2.0,0.0,0.0), 0.0, glm::vec3(1.0, 1.0, 1.0)));
-  Cube_test.push_back(new Cube("blabla", glm::vec3(0.0,0.0,2.0), 0.0, glm::vec3(1.0, 1.0, 1.0)));
-  Cube_test.push_back(new Cube("blabla", glm::vec3(-2.0,0.0,0.0), 0.0, glm::vec3(1.0, 0.5, 0.5)));
-  Cube_test.push_back(new Cube("blabla", glm::vec3(0.0,0.0,-2.0), 0.0, glm::vec3(0.0, 1.0, 0.0)));
+  int random = 8;
+
+  for (int p = 0; p < random; p++){
+    cout << p << endl;
+    Cube_test.push_back(new Cube("blabla", glm::vec3(random_int(-10,10),random_int(-2,2),random_int(-10,10)), 0.0, WHITE));
+  }
 
   vector <Text *>Text_test;
   Text_test.push_back(new Text("teste2", glm::vec3(0.1,0.0,0.0), glm::vec3(1.0, 1.0, 1.0), 25));

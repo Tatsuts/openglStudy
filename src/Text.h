@@ -21,11 +21,13 @@ class Text{
     ~Text();
     bool init();
     void draw(string text = "blabla");
-    void update(string stringUpdate);
+    void update();
     void free();
 
   private:
+    TTF_Font *_font;
     SDL_Surface *res_texture;
+    SDL_Color _Color;
     string _text;
     glm::vec3 _position, _color;
     int _size;

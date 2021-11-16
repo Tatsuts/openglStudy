@@ -13,9 +13,9 @@ Text::~Text(){
 
 bool Text::init(){
   TTF_Init();
-  TTF_Font *font = TTF_OpenFont("pixelplay.ttf", _size);
-  SDL_Color color = {255, 0, 0, 255};
-  res_texture = TTF_RenderText_Blended(font, _text.c_str(), color);
+  _font = TTF_OpenFont("pixelplay.ttf", _size);
+  _Color = {(Uint8)(_color.b * 255), (Uint8)(_color.g * 255), (Uint8)(_color.r * 255), 255};
+  res_texture = TTF_RenderText_Blended(_font, _text.c_str(), _Color);
 
   float vertices[] = {
      0.0f,                   0.0f,                   0.0f,  0.0f, 0.0f,  // top right
@@ -30,8 +30,8 @@ bool Text::init(){
 
   glGenTextures(1, &_texture_id);
   glBindTexture(GL_TEXTURE_2D, _texture_id);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexImage2D(GL_TEXTURE_2D, // target
     0, // level, 0 = base, no minimap,
     GL_RGBA, // internalformat
@@ -41,6 +41,7 @@ bool Text::init(){
     GL_RGBA, // format
     GL_UNSIGNED_BYTE, // type
     res_texture->pixels);
+  SDL_FreeSurface(res_texture);
 
 
   glGenBuffers(1, &_VBO);
@@ -77,10 +78,7 @@ bool Text::init(){
 
 void Text::draw(string text){
   if(text != "blabla"){
-    TTF_Init();
-    TTF_Font *font = TTF_OpenFont("pixelplay.ttf", _size);
-    SDL_Color color = {(Uint8)(_color.b * 255), (Uint8)(_color.g * 255), (Uint8)(_color.r * 255), 255};
-    res_texture = TTF_RenderText_Blended(font, text.c_str(), color);
+    res_texture = TTF_RenderText_Blended_Wrapped(_font, text.c_str(), _Color,200);
     glBindTexture(GL_TEXTURE_2D, _texture_id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -99,8 +97,9 @@ void Text::draw(string text){
          (float)res_texture->w,  (float)res_texture->h,  0.0f,  1.0f, 1.0f,// bottom left
          0.0f,                   (float)res_texture->h,  0.0f,  0.0f, 1.0f// top left
        };
+    SDL_FreeSurface(res_texture);
     glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
   }
 
 
@@ -125,8 +124,7 @@ void Text::draw(string text){
   glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
 }
 
-void Text::update(string stringUpdate){
-  _text = stringUpdate;
+void Text::update(){
   glUseProgram(_shaderProgram);
   glm::mat4 m_model = glm::translate(glm::mat4(1.0f),_position);
   glm::mat4 m_projection = glm::ortho( 0.0f, 640.0f, 480.0f, 0.0f, 0.2f, 20.0f );
@@ -138,6 +136,8 @@ void Text::update(string stringUpdate){
 
 void Text::free(){
   cout << "The Text Resources are being deleted" << endl;
+  TTF_Quit();
+  glDeleteTextures(1, &_texture_id);
   glDeleteProgram(_shaderProgram);
   glDeleteShader(_vertexShader);
   glDeleteShader(_fragmentShader);

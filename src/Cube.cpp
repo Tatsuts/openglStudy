@@ -1,4 +1,7 @@
 #include "Cube.h"
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 extern float delta;
 
@@ -14,6 +17,8 @@ Cube::~Cube(){
 }
 
 bool Cube::init(float vertices[], int bytesize){
+  _angle = random_int(20, 90);
+  _rotation_axis = glm::vec3((float)random_int(0, 1),(float)random_int(0, 1),(float)random_int(0, 1));
   unsigned int indices[] = {
     // front
      0,  1,  2,
@@ -35,7 +40,7 @@ bool Cube::init(float vertices[], int bytesize){
     22, 23, 20,
   };
 
-  SDL_Surface* res_texture = IMG_Load("image.jpg");
+  SDL_Surface* res_texture = IMG_Load("image.png");
 	if (res_texture == NULL) {
 		cerr << "IMG_Load: " << SDL_GetError() << endl;
 		return false;
@@ -47,11 +52,11 @@ bool Cube::init(float vertices[], int bytesize){
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, // target
 		0, // level, 0 = base, no minimap,
-		GL_RGB, // internalformat
+		GL_RGBA, // internalformat
 		res_texture->w, // width
 		res_texture->h, // height
 		0, // border, always 0 in OpenGL ES
-		GL_RGB, // format
+		GL_RGBA, // format
 		GL_UNSIGNED_BYTE, // type
 		res_texture->pixels);
 	SDL_FreeSurface(res_texture);
@@ -120,16 +125,22 @@ void Cube::draw(){
 }
 
 void Cube::update(glm::mat4 view, glm::mat4 projection, glm::vec3 lightpos){
-  //float deltaTime = delta / 1000.0;
+
   float angle = SDL_GetTicks() / 1000.0 * 40;
 
-  glm::mat4 m_model = glm::translate(glm::mat4(1.0f),_position) * glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0,1.0,0.0));
+  glm::mat4 m_model = glm::translate(glm::mat4(1.0f),_position);
+  m_model *= glm::rotate(angle,_rotation_axis);
 
-  //glm::mat4 m_transform = projection * view * m_model;
+  /*
+  Lookat3D function.
+  This function allow the object lock the angle into a 3d Point.
+  */
+
+  //glm::vec3 direction = glm::normalize(_position - lightpos);
+  //m_model = m_model * glm::inverse(glm::lookAt(glm::vec3(0.0,0.0,0.0),direction,glm::vec3(0.0,1.0,0.0)));
 
   //_time += SDL_GetTicks() / 1000.0 * 0.05;
   _time += (delta / 1000.0) / 2;
-
 
   glUseProgram(_shaderProgram);
   glUniformMatrix4fv(glGetUniformLocation(_shaderProgram, "m_model"), 1, GL_FALSE, glm::value_ptr(m_model));

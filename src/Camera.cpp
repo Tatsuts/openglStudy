@@ -93,7 +93,10 @@ void Camera::input(float speed){
     _position.y -= speed * deltaTime;
     //cout << _position.x << " " << _position.y << " " << _position.z << endl;
   }
-  _view = glm::lookAt(_position, _position + _cameraFront, glm::vec3(0.0,1.0,0.0));
+
+  glm::vec3 _up = glm::vec3(0.0,1.0,0.0);
+  _view = glm::lookAt(_position, _position + _cameraFront, _up);
+
   _projection = glm::perspective(45.0f, (float)(320)/(float)(240), 0.2f, 200.0f);
 }
 

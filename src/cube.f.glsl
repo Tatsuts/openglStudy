@@ -37,7 +37,7 @@ void main(){
   //                                               (OurColor.g * (cos(time + 8.0) + 1.0) * 1.3),
   //                                               (OurColor.b * (cos(time + 4.0) + 1.0) * 1.5),1.0);
   //FragColor = vec4(OurColor,1.0);
-  vec3 col = 0.5 + 0.5*cos(time+flip.xyx+vec3(0,2,4));
+  //vec3 col = 0.5 + 0.5*cos(time+flip.xyx+vec3(0,2,4));
 
   FragColor = texture2D(mytexture, flip) * vec4(OurColor, 1.0) * vec4(result,1.0);
 };

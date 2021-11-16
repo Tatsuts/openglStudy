@@ -13,6 +13,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "ShaderUtil.h"
+#include "Util.h"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ class Cube{
 
   private:
     string teste;
-    glm::vec3 _position,_color;
+    glm::vec3 _position,_color,_rotation_axis;
     float _angle, _time = 0;
     unsigned int _VBO = 0, _EBO = 0, _texture_id, _fragmentShader, _vertexShader, _shaderProgram;
 };

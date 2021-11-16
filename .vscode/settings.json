@@ -1,0 +1,10 @@
+{
+    "makefile.extensionOutputFolder": "./.vscode",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/tatsu/openglStudy",
+            "binaryPath": "/home/tatsu/openglStudy/test",
+            "binaryArgs": []
+        }
+    ]
+}
